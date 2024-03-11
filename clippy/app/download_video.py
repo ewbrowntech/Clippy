@@ -12,6 +12,7 @@ the MIT License. See the LICENSE file for more details.
 
 import discord
 from discord import Message
+from extract_video_id import extract_video_id, NoURLException
 
 
 async def download_video(message: Message):
@@ -19,7 +20,14 @@ async def download_video(message: Message):
     Run the download operation
     """
     # Extract the URL
-    video_id = await extract_video_id(message.content)
+    try:
+        video_id = await extract_video_id(message.content)
+    except NoURLException:
+        await message.channel.send(
+            "Please include a valid YouTube URL in your request. (ex: <https://youtu.be/dQw4w9WgXcQ>)",
+            reference=message,
+        )
+        return
 
     if message.content.startswith("!download-audio"):
         response = await message.channel.send(
@@ -35,7 +43,7 @@ async def download_video(message: Message):
         )
         # Get the available resolutions
         # Download video stream
-        response = await download_audio_stream(video_id, response)
+        response = await download_video_stream(video_id, response)
         # Upload the video stream
 
     elif message.content.startswith("!download-video"):
@@ -50,11 +58,6 @@ async def download_video(message: Message):
         # Upload the multimedia file
 
     return
-
-
-async def extract_video_id(message_content: str):
-    video_id = None
-    return video_id
 
 
 async def download_audio_stream(video_id: str, response: Message):
