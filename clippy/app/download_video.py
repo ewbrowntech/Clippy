@@ -13,6 +13,7 @@ the MIT License. See the LICENSE file for more details.
 import discord
 from discord import Message
 from extract_video_id import extract_video_id, NoURLException
+from get_metadata import get_metadata
 
 
 async def download_video(message: Message):
@@ -29,32 +30,49 @@ async def download_video(message: Message):
         )
         return
 
-    if message.content.startswith("!download-audio"):
-        response = await message.channel.send(
-            "Download a video (audio)", reference=message
+    # Get the video metadata
+    metadata = await get_metadata(video_id)
+    if metadata["age_restricted"]:
+        await message.channel.send(
+            "This video is age restricted, and it, therefore, cannot be downloaded.",
+            reference=message,
         )
+        return
+
+    # Get the title of the video
+    title = metadata["title"]
+
+    if message.content.startswith("!download-audio"):
+        response_main = await message.channel.send(
+            f"Downloading **{title}** as an **audio** file...", reference=message
+        )
+        status = await message.channel.send("Starting...", reference=message)
         # Download the audio stream
-        response = await download_audio_stream(video_id, response)
+        status = await download_audio_stream(video_id, status)
         # Upload the audio stream
 
     elif message.content.startswith("!download-video-only"):
-        response = await message.channel.send(
-            "Download a video (video only)", reference=message
+        response_main = await message.channel.send(
+            f"Downloading **{title}** as a **video** file...", reference=message
         )
+        status = await message.channel.send("Starting...", reference=message)
         # Get the available resolutions
         # Download video stream
-        response = await download_video_stream(video_id, response)
+        status = await download_video_stream(video_id, status)
         # Upload the video stream
 
     elif message.content.startswith("!download-video"):
-        await message.channel.send("Download a video (multimedia)", reference=message)
+        response_main = await message.channel.send(
+            f"Downloading **{title}** as a **multimedia** file...", reference=message
+        )
+        status = await message.channel.send("Starting...", reference=message)
         # Get the available resolutions
         # Download the audio stream
-        response = await download_audio_stream(video_id, response)
+        status = await download_audio_stream(video_id, status)
         # Download the video stream
-        response = await download_video_stream(video_id, response)
+        status = await download_video_stream(video_id, status)
         # Merge the audio and video streams
-        response = await merge_multimedia(response)
+        status = await merge_multimedia(status)
         # Upload the multimedia file
 
     return

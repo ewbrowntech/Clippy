@@ -14,6 +14,9 @@ import re
 
 
 async def extract_video_id(message_content: str):
+    """
+    Extract a YouTube video ID from a message
+    """
     pattern = re.compile(
         r"https?://(?:www\.youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]+)"
     )

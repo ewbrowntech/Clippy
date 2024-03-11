@@ -16,6 +16,11 @@ import discord
 
 from download_video import download_video
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 # Define the intents of the Discord client
 intents = discord.Intents.default()
 intents.message_content = True
