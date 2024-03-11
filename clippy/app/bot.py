@@ -14,6 +14,7 @@ import os
 import logging
 import discord
 
+from download_video import download_video
 
 # Define the intents of the Discord client
 intents = discord.Intents.default()
@@ -35,6 +36,11 @@ async def on_message(message):
     if message.content.startswith("!hello"):
         print("Hello message")
         await message.channel.send("Hello!")
+    if any(
+        message.content.startswith(command)
+        for command in ["!download-video", "!download-audio", "!download-video-only"]
+    ):
+        await download_video(message)
 
 
 # Verify that the API key is set
