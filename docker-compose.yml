@@ -6,3 +6,9 @@ services:
     env_file: .env
     volumes:
       - ./storage:/storage
+    networks:
+      - clippy
+
+networks:
+  clippy:
+    external: true
