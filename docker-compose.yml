@@ -5,7 +5,7 @@ services:
     build: ./clippy
     env_file: .env
     volumes:
-      - ./storage:/storage
+      - ./storage/clippy:/storage
     networks:
       - clippy
 

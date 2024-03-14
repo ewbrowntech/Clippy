@@ -14,6 +14,7 @@ import os
 import json
 import logging
 import httpx
+from exceptions import PytubeApiException
 
 
 async def get_metadata(video_id: str):
@@ -38,6 +39,8 @@ async def get_metadata(video_id: str):
             response = await client.get(request_url, params=params)
             response.raise_for_status()  # Raises an exception for 4XX/5XX responses
             return response.json()
+    except httpx.ConnectError as e:
+        raise PytubeApiException()
     except httpx.HTTPStatusError as e:
         logger.info(f"HTTP error occurred: {e.response.status_code}")
     except httpx.RequestError as e:

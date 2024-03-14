@@ -14,6 +14,7 @@ import discord
 from discord import Message
 from extract_video_id import extract_video_id, NoURLException
 from get_metadata import get_metadata
+from exceptions import PytubeApiException
 
 
 async def download_video(message: Message):
@@ -31,7 +32,14 @@ async def download_video(message: Message):
         return
 
     # Get the video metadata
-    metadata = await get_metadata(video_id)
+    try:
+        metadata = await get_metadata(video_id)
+    except PytubeApiException:
+        await message.channel.send(
+            "An error occurred while attempting to retrieve the metadata for this video.",
+            reference=message,
+        )
+        return
     if metadata["age_restricted"]:
         await message.channel.send(
             "This video is age restricted, and it, therefore, cannot be downloaded.",
