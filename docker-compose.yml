@@ -9,6 +9,14 @@ services:
     networks:
       - clippy
 
+  pytube-api:
+    image: ewbrowntech/pytube-api:latest
+    env_file: .env
+    volumes:
+      - ./storage/pytube-api:/storage
+    networks:
+      - clippy
+
 networks:
   clippy:
     external: true
