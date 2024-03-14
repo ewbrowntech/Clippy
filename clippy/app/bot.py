@@ -11,9 +11,11 @@ the MIT License. See the LICENSE file for more details.
 """
 
 import os
+import time
 import logging
 import discord
 
+from healthcheck import healthcheck
 from download_video import download_video
 
 # Configure logging
@@ -54,4 +56,8 @@ if api_token is None:
     raise EnvironmentError("Environment variable API_TOKEN is not set")
 
 # Run the Discord bot client
+logging.info("Running healthcheck on microservices...")
+time.sleep(5)
+healthcheck()
+logging.info("Healthcheck passed. Starting Discord bot...")
 client.run(api_token)
